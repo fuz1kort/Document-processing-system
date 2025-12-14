@@ -1,0 +1,48 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Document API Gateway
+paths:
+  /documents:
+    post:
+      summary: Upload document async
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, url]
+              properties:
+                name:
+                  type: string
+                url:
+                  type: string
+      x-yc-apigateway-integration:
+        type: cloud_ymq
+        action: SendMessage
+        folder_id: ${folder_id}
+        queue_url: ${mq_url}
+        service_account_id: ${api_gw_sa_id}
+        
+    get:
+      summary: Get documents list
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: ${func_id}
+        service_account_id: ${api_gw_sa_id}
+
+  /documents/{id}:
+    get:
+      summary: Download document
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      x-yc-apigateway-integration:
+        type: object_storage
+        bucket: ${bucket_name}
+        object: '{id}'
+        service_account_id: ${api_gw_sa_id}
