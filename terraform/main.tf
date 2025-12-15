@@ -102,7 +102,8 @@ resource "yandex_api_gateway" "document_api_gw" {
 
 resource "yandex_storage_bucket" "bucket" {
   bucket = "itis-vvot21-document-storage"
-  folder_id = var.folder_id
+  access_key = yandex_iam_service_account_static_access_key.func_static_key.access_key
+  secret_key = yandex_iam_service_account_static_access_key.func_static_key.secret_key
 }
 
 # === Function ===
